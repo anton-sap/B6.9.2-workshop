@@ -1,0 +1,24 @@
+---
+- hosts: alma
+  gather_facts: True
+  become: True
+  tasks:
+  - name: Create Group superusers
+    ansible.builtin.group:
+      name: superusers
+      state: present
+  - name: Create users and add to group
+    ansible.builtin.user:
+      name: "{{ item }}"
+      groups: "superusers"
+      state: present
+    with_items:
+      - user2
+      - user3
+  - name: Add superusers group to sudoers
+    ansible.builtin.copy:
+      src: templates/users_to_sudoers
+      dest: /etc/sudoers.d/users_to_sudoers
+      owner: root
+      group: root
+      mode: '0440'

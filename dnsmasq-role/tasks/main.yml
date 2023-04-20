@@ -1,0 +1,11 @@
+---
+# tasks file for dnsmasq-role
+- name: Install dnsmasq from yum repo
+  ansible.builtin.yum:
+    name: dnsmasq
+    state: installed
+- name: Start dnsmasq service
+  ansible.builtin.service:
+    name: dnsmasq
+    state: started
+    enabled: yes

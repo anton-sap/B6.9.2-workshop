@@ -1,0 +1,11 @@
+---
+# handlers file for nginx_php_fpm_role
+- name: "restart_php-fpm"
+  ansible.builtin.service:
+    name: php-fpm
+    state: restarted
+
+- name: "restart_nginx"
+  ansible.builtin.service:
+    name: nginx
+    state: restarted

@@ -1,0 +1,48 @@
+---
+# tasks file for nginx_php_fpm_role
+- name: Install nginx
+  ansible.builtin.yum:
+    name: nginx
+    state: present
+- name: Ensure nginx is started and enabled
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+- name: Install php-fpm
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - php
+    - php-fpm
+- name: Ensure php-fpm is started
+  ansible.builtin.service:
+    name: php-fpm
+    state: started
+    enabled: yes
+- name: Add php-fpm config
+  ansible.builtin.copy:
+    src: files/etc/php-fpm.d/www.conf
+    dest: /etc/php-fpm.d/www.conf
+  notify:
+    - "restart_php-fpm"
+- name: Create nginx root dir /opt/nginx/ansible
+  ansible.builtin.file:
+    path: /opt/nginx/ansible
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: '0750'
+- name: Add new nginx.conf to change www-root dir
+  ansible.builtin.copy:
+    src: files/etc/nginx/nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify:
+    - "restart_nginx"
+- name: Add index.php to nginx dir
+  ansible.builtin.copy:
+    src: files/usr/share/nginx/html/index.php
+    dest: /opt/nginx/ansible/index.php
+  notify:
+    - "restart_nginx"
